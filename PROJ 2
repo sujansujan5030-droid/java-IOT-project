@@ -1,0 +1,73 @@
+import java.util.*;
+
+class Subject {
+    String name;
+    String teacher;
+    String room;
+
+    Subject(String name, String teacher, String room) {
+        this.name = name;
+        this.teacher = teacher;
+        this.room = room;
+    }
+}
+
+public class Main {
+    static Subject[] subjects = {
+        new Subject("Math", "T1", "R1"),
+        new Subject("Physics", "T2", "R2"),
+        new Subject("Chemistry", "T1", "R3")
+    };
+
+    static String[] slots = {"S1", "S2", "S3"};
+
+    static Map<String, Subject> timetable = new HashMap<>();
+
+    public static boolean isSafe(Subject sub, String slot) {
+        for (Map.Entry<String, Subject> entry : timetable.entrySet()) {
+            if (entry.getKey().equals(slot)) {
+                Subject assigned = entry.getValue();
+                if (assigned.teacher.equals(sub.teacher) || assigned.room.equals(sub.room)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public static boolean backtrack(int index) {
+        if (index == subjects.length) {
+            return true;
+        }
+
+        Subject sub = subjects[index];
+
+        for (String slot : slots) {
+            if (!timetable.containsKey(slot) && isSafe(sub, slot)) {
+                timetable.put(slot, sub);
+
+                if (backtrack(index + 1)) {
+                    return true;
+                }
+
+                timetable.remove(slot);
+            }
+        }
+        return false;
+    }
+
+    public static void generateTimetable() {
+        if (backtrack(0)) {
+            for (String slot : timetable.keySet()) {
+                Subject s = timetable.get(slot);
+                System.out.println(slot + " -> " + s.name + " | " + s.teacher + " | " + s.room);
+            }
+        } else {
+            System.out.println("No valid timetable found");
+        }
+    }
+
+    public static void main(String[] args) {
+        generateTimetable();
+    }
+}
