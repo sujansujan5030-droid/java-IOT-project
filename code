@@ -1,0 +1,135 @@
+class Ride {
+    String pickup;
+    String drop;
+    double fare;
+
+    Ride(String pickup, String drop, double fare) {
+        this.pickup = pickup;
+        this.drop = drop;
+        this.fare = fare;
+    }
+
+    public String toString() {
+        return "Pickup: " + pickup + ", Drop: " + drop + ", Fare: " + fare;
+    }
+}
+
+class Node {
+    Ride data;
+    Node next;
+
+    Node(Ride data) {
+        this.data = data;
+        this.next = null;
+    }
+}
+
+class RideHistory {
+    Node head;
+
+    public void addRide(Ride r) {
+        Node newNode = new Node(r);
+
+        if (head == null) {
+            head = newNode;
+            return;
+        }
+
+        Node temp = head;
+        while (temp.next != null) {
+            temp = temp.next;
+        }
+
+        temp.next = newNode;
+    }
+
+    public void deleteLastRide() {
+        if (head == null) {
+            System.out.println("No rides to delete");
+            return;
+        }
+
+        if (head.next == null) {
+            head = null;
+            return;
+        }
+
+        Node temp = head;
+        while (temp.next.next != null) {
+            temp = temp.next;
+        }
+
+        temp.next = null;
+    }
+
+    public void viewRides() {
+        if (head == null) {
+            System.out.println("No rides available");
+            return;
+        }
+
+        Node temp = head;
+        while (temp != null) {
+            System.out.println(temp.data);
+            temp = temp.next;
+        }
+    }
+
+    public void searchRide(String location) {
+        Node temp = head;
+        boolean found = false;
+
+        while (temp != null) {
+            if (temp.data.pickup.equalsIgnoreCase(location) ||
+                temp.data.drop.equalsIgnoreCase(location)) {
+
+                System.out.println("Found: " + temp.data);
+                found = true;
+            }
+            temp = temp.next;
+        }
+
+        if (!found) {
+            System.out.println("No ride found for location: " + location);
+        }
+    }
+
+    public void reverseHistory() {
+        Node prev = null;
+        Node curr = head;
+        Node next;
+
+        while (curr != null) {
+            next = curr.next;
+            curr.next = prev;
+            prev = curr;
+            curr = next;
+        }
+
+        head = prev;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        RideHistory history = new RideHistory();
+
+        history.addRide(new Ride("Home", "Mall", 150));
+        history.addRide(new Ride("Mall", "Office", 200));
+        history.addRide(new Ride("Office", "Airport", 500));
+
+        System.out.println("All Rides:");
+        history.viewRides();
+
+        System.out.println("\nSearch 'Mall':");
+        history.searchRide("Mall");
+
+        System.out.println("\nDeleting last ride...");
+        history.deleteLastRide();
+        history.viewRides();
+
+        System.out.println("\nReversed History:");
+        history.reverseHistory();
+        history.viewRides();
+    }
+}
